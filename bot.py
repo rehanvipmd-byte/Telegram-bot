@@ -6,6 +6,7 @@ import time
 from datetime import datetime, timedelta
 import sqlite3
 import re
+import os
 
 # ============= CONFIGURATION (BAS YAHI CHANGE KARNA HAI) =============
 BOT_TOKEN = "8905549650:AAFeUzllz08MA5HKVIKdcY5vfCkEIzRiaSU"
@@ -321,8 +322,6 @@ async def give_content(query, context: ContextTypes.DEFAULT_TYPE, user_id: int):
             return
     
     # No access
-    await start(update, ContextTypes.DEFAULT_TYPE())
-    # We need to handle this properly
     await query.message.reply_text("❌ Aapka access expired ho gaya hai! /start karo naye access ke liye.")
 
 async def ad_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -369,7 +368,11 @@ async def premium_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     await update.message.reply_text(plans, parse_mode="Markdown")
 
+# ============= YAHAN SIRF YEH CHANGE KIYA HAI (RENDER KE LIYE) =============
 def main():
+    # Render.com ka PORT environment variable
+    port = int(os.environ.get('PORT', 8080))
+    
     app = Application.builder().token(BOT_TOKEN).build()
     
     # Commands
@@ -380,11 +383,17 @@ def main():
     # Button handler
     app.add_handler(CallbackQueryHandler(button_callback))
     
-    print("🤖 BOT IS RUNNING...")
+    print("🤖 BOT IS RUNNING ON RENDER...")
     print(f"📢 Main Channel: {MAIN_CHANNEL_LINK}")
     print(f"👑 Owner Chat ID: {OWNER_CHAT_ID}")
     
-    app.run_polling()
+    # Render ke liye Webhook mode - YAHI SE ERROR FIX HUA
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=port,
+        webhook_url=f"https://telegram-bot-1-ukue.onrender.com"  # Apna Render URL yahan daalo
+    )
+# =========================================================================
 
 if __name__ == "__main__":
     main()
