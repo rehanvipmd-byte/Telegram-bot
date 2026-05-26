@@ -368,32 +368,20 @@ async def premium_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     await update.message.reply_text(plans, parse_mode="Markdown")
 
-# ============= YAHAN SIRF YEH CHANGE KIYA HAI (RENDER KE LIYE) =============
 def main():
-    # Render.com ka PORT environment variable
-    port = int(os.environ.get('PORT', 8080))
-    
     app = Application.builder().token(BOT_TOKEN).build()
     
-    # Commands
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("ad", ad_command))
     app.add_handler(CommandHandler("premium", premium_command))
-    
-    # Button handler
     app.add_handler(CallbackQueryHandler(button_callback))
     
-    print("🤖 BOT IS RUNNING ON RENDER...")
+    print("🤖 BOT IS RUNNING...")
     print(f"📢 Main Channel: {MAIN_CHANNEL_LINK}")
     print(f"👑 Owner Chat ID: {OWNER_CHAT_ID}")
     
-    # Render ke liye Webhook mode - YAHI SE ERROR FIX HUA
-    app.run_webhook(
-        listen="0.0.0.0",
-        port=port,
-        webhook_url=f"https://telegram-bot-1-ukue.onrender.com"  # Apna Render URL yahan daalo
-    )
-# =========================================================================
+    # POLLING MODE - YEH RENDER PAR BEST KAAM KAREGA
+    app.run_polling()
 
 if __name__ == "__main__":
     main()
